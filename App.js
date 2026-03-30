@@ -1,31 +1,27 @@
-import { useState } from 'react';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, FlateList } from 'react-native';
+import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { CheckBox, Input, Button } from '@rneui/themed';
-import { add } from 'react-native/types_generated/Libraries/Animated/AnimatedExports';
-
-import React, { useState } from "react";
 
 export default function TaskApp() {
   const [tasks, setTasks] = useState([
-    { key: 1, description: "Buy groceries", completed: false },
-    { key: 2, description: "Finish paper", completed: false },
-    { key: 3, description: "Do quiz Ch. 8", completed: true }
+    { key: '1', description: 'Buy groceries', completed: false },
+    { key: '2', description: 'Finish paper', completed: false },
+    { key: '3', description: 'Do quiz Ch. 8', completed: true }
   ]);
 
-  const [newTask, setNewTask] = useState("");
+  const [newTask, setNewTask] = useState('');
 
   const addTask = () => {
     if (!newTask.trim()) return;
 
     const newItem = {
-      key: Date.now(),
+      key: Date.now().toString(),
       description: newTask,
       completed: false
     };
 
     setTasks([...tasks, newItem]);
-    setNewTask("");
+    setNewTask('');
   };
 
   const toggleTask = (key) => {
@@ -38,70 +34,96 @@ export default function TaskApp() {
     );
   };
 
+  const renderItem = ({ item }) => (
+    <View style={styles.taskContainer}>
+      <CheckBox
+        checked={item.completed}
+        onPress={() => toggleTask(item.key)}
+      />
+
+      <Text
+        style={item.completed ? styles.completedText : styles.taskText}
+      >
+        {item.description}
+      </Text>
+
+      {/* Button to mark incomplete tasks as complete */}
+      {!item.completed ? (
+        <Button
+          title="Complete"
+          type="outline"
+          size="16"
+          onPress={() => toggleTask(item.key)}
+        />
+      ) : (
+        <Text style={styles.doneLabel}>Completed</Text>
+      )}
+    </View>
+  );
+
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-6">
-        {/* Header */}
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">
-          ToDo
-        </h1>
+    <View style={styles.container}>
+      <Text style={styles.title}>ToDo</Text>
 
-        {/* Input */}
-        <div className="flex gap-2 mb-4">
-          <input
-            type="text"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && addTask()}
-            placeholder="Add Task"
-            className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <button
-            onClick={addTask}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-          >
-            Add
-          </button>
-        </div>
+      <View style={styles.inputRow}>
+        <Input
+          placeholder="Add Task"
+          value={newTask}
+          onChangeText={setNewTask}
+          containerStyle={{ flex: 1 }}
+        />
+        <Button title="Add" onPress={addTask} />
+      </View>
 
-        {/* Task List */}
-        <div className="space-y-2">
-          {tasks.map((task) => (
-            <div
-              key={task.key}
-              className="flex items-center justify-between bg-gray-50 p-3 rounded-lg shadow-sm"
-            >
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  onChange={() => toggleTask(task.key)}
-                />
-
-                {/* Task name + completion styling */}
-                <span
-                  style={
-                    task.completed
-                      ? {
-                          textDecorationLine: 'line-through',
-                          textDecorationStyle: 'solid'
-                        }
-                      : {}
-                  }
-                  className="text-gray-800"
-                >
-                  {task.description}
-                </span>
-              </div>
-
-              {/* Visual indicator of completion (still visible) */}
-              <span className={`text-sm font-medium ${task.completed ? 'text-green-500' : 'text-gray-400'}`}>
-                {task.completed ? 'Completed' : 'Not done'}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+      <FlatList
+        data={tasks}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.key}
+      />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: 'lightblue'
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20
+  },
+  taskContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 10
+  },
+  taskText: {
+    flex: 1,
+    fontSize: 16
+  },
+  completedText: {
+    flex: 1,
+    fontSize: 16,
+    textDecorationLine: 'line-through',
+    textDecorationStyle: 'solid'
+  },
+  doneLabel: {
+    color: 'green'
+  },
+  notDoneLabel: {
+    color: 'gray'
+  }
+});
