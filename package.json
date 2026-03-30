@@ -2,7 +2,7 @@
   "name": "expo-todo-list",
   "version": "1.0.0",
   "homepage": "https://sototravebianca.github.io/expo-todo-list",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -23,8 +23,5 @@
     "react-native-web": "^0.21.0",
     "react-test-renderer": "^19.2.4"
   },
-  "private": false,
-  "devDependencies": {
-    "gh-pages": "^6.3.0"
-  }
+  "private": false
 }
